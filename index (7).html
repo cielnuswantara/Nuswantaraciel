@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lokaria — Belanja Online</title>
+<style>
+:root{
+  --bg:#f6f7fb;--card:#fff;--text:#1b1d2a;--muted:#6b7086;--line:#e6e8f0;
+  --primary:#6c4dff;--primary2:#ff4d8d;--ok:#16a34a;--shadow:0 8px 30px rgba(30,30,70,.08);
+}
+body.dark{--bg:#0f1020;--card:#181a30;--text:#eef0ff;--muted:#9aa0c3;--line:#272a48;--shadow:0 8px 30px rgba(0,0,0,.4)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select{font:inherit;color:inherit}
+.container{max-width:1180px;margin:auto;padding:0 20px}
+.grad{background:linear-gradient(135deg,var(--primary),var(--primary2))}
+
+/* NAV */
+header{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:14px;height:68px}
+.logo{font-weight:800;font-size:1.4rem;letter-spacing:-.5px;background:linear-gradient(135deg,var(--primary),var(--primary2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.search{flex:1;max-width:460px;position:relative}
+.search input{width:100%;padding:11px 16px 11px 40px;border-radius:999px;border:1px solid var(--line);background:var(--bg);outline:none;transition:.2s}
+.search input:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(108,77,255,.15)}
+.search span{position:absolute;left:14px;top:50%;transform:translateY(-50%)}
+.nav-actions{margin-left:auto;display:flex;align-items:center;gap:6px}
+.icon-btn{position:relative;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:1.15rem;transition:.2s}
+.icon-btn:hover{background:var(--bg);transform:translateY(-2px)}
+.badge{position:absolute;top:2px;right:0;min-width:18px;height:18px;padding:0 5px;border-radius:9px;font-size:.7rem;font-weight:700;color:#fff;display:grid;place-items:center}
+.btn{padding:10px 20px;border-radius:999px;font-weight:600;transition:.2s}
+.btn-primary{color:#fff;background:linear-gradient(135deg,var(--primary),var(--primary2));box-shadow:0 6px 18px rgba(108,77,255,.35)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(108,77,255,.45)}
+.btn-ghost{border:1px solid var(--line)}
+.btn-ghost:hover{border-color:var(--primary);color:var(--primary)}
+.user-wrap{position:relative}
+.user-chip{display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:999px;border:1px solid var(--line)}
+.avatar{width:32px;height:32px;border-radius:50%;color:#fff;display:grid;place-items:center;font-weight:700;font-size:.85rem}
+.dropdown{position:absolute;right:0;top:calc(100% + 8px);min-width:200px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:8px;display:none}
+.dropdown.open{display:block;animation:pop .18s ease}
+.dropdown button{width:100%;text-align:left;padding:10px 12px;border-radius:8px}
+.dropdown button:hover{background:var(--bg)}
+@keyframes pop{from{opacity:0;transform:translateY(-6px) scale(.97)}to{opacity:1;transform:none}}
+
+/* HERO */
+.hero{margin:26px 0;border-radius:28px;padding:56px 44px;color:#fff;position:relative;overflow:hidden;
+  background:linear-gradient(120deg,#5b3df5,#a244ff 55%,#ff4d8d)}
+.hero h1{font-size:clamp(2rem,5vw,3.4rem);line-height:1.1;letter-spacing:-1px;max-width:560px}
+.hero p{margin:16px 0 26px;max-width:460px;opacity:.92;font-size:1.05rem}
+.hero .btn{background:#fff;color:#5b3df5;font-weight:700}
+.hero .btn:hover{transform:translateY(-3px)}
+.blob{position:absolute;border-radius:50%;filter:blur(2px);opacity:.25;background:#fff;animation:float 7s ease-in-out infinite}
+.b1{width:260px;height:260px;right:-60px;top:-60px}
+.b2{width:140px;height:140px;right:180px;bottom:-40px;animation-delay:-3s}
+.hero-emoji{position:absolute;right:50px;top:50%;transform:translateY(-50%);font-size:7rem;animation:float 5s ease-in-out infinite;filter:drop-shadow(0 20px 20px rgba(0,0,0,.25))}
+@keyframes float{50%{transform:translateY(-50%) translateY(-18px)}}
+.b1,.b2{animation-name:floatb}
+@keyframes floatb{50%{transform:translateY(-16px)}}
+@media(max-width:700px){.hero{padding:36px 24px}.hero-emoji{display:none}}
+
+/* PERKS + FLASH */
+.perks{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:26px}
+.perk{background:var(--card);border-radius:18px;padding:16px 18px;display:flex;gap:12px;align-items:center;box-shadow:var(--shadow)}
+.perk b{display:block}.perk small{color:var(--muted)}
+.perk .e{font-size:1.6rem}
+.flash{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;background:var(--card);border-radius:18px;padding:16px 22px;box-shadow:var(--shadow);margin-bottom:30px;border:1px dashed var(--primary2)}
+.timer{display:flex;gap:6px}
+.timer span{background:var(--text);color:var(--bg);padding:6px 10px;border-radius:8px;font-weight:700;font-variant-numeric:tabular-nums}
+
+/* TOOLBAR */
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;margin-bottom:20px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:9px 18px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-weight:600;font-size:.92rem;transition:.2s}
+.chip:hover{border-color:var(--primary)}
+.chip.active{color:#fff;border-color:transparent;background:linear-gradient(135deg,var(--primary),var(--primary2))}
+select{padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card)}
+h2.title{font-size:1.5rem;margin-bottom:14px}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px;margin-bottom:60px}
+.card{background:var(--card);border-radius:20px;overflow:hidden;box-shadow:var(--shadow);transition:.3s;display:flex;flex-direction:column;animation:rise .5s both}
+.card:hover{transform:translateY(-8px);box-shadow:0 18px 40px rgba(108,77,255,.2)}
+@keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.thumb{height:180px;display:grid;place-items:center;font-size:5rem;position:relative;cursor:pointer;transition:.3s}
+.thumb i{font-style:normal;display:block;transition:.4s}
+.card:hover .thumb i{transform:scale(1.18) rotate(-6deg)}
+.tag{position:absolute;left:12px;top:12px;background:var(--primary2);color:#fff;font-size:.75rem;font-weight:700;padding:4px 10px;border-radius:999px}
+.wish{position:absolute;right:10px;top:10px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.9);color:#333;font-size:1rem;display:grid;place-items:center;transition:.2s}
+.wish:hover{transform:scale(1.15)}
+.info{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.info h3{font-size:1rem;line-height:1.3}
+.meta{color:var(--muted);font-size:.82rem}
+.price{font-weight:800;font-size:1.1rem}
+.old{color:var(--muted);text-decoration:line-through;font-size:.82rem;margin-left:6px;font-weight:400}
+.add{margin-top:auto;padding:10px;border-radius:12px;font-weight:700;color:#fff}
+.empty{grid-column:1/-1;text-align:center;padding:60px 0;color:var(--muted)}
+
+/* OVERLAY / DRAWER / MODAL */
+.overlay{position:fixed;inset:0;background:rgba(10,10,30,.55);backdrop-filter:blur(3px);z-index:90;display:none}
+.overlay.open{display:block;animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,100%);background:var(--card);z-index:100;transform:translateX(105%);transition:.35s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;box-shadow:-10px 0 40px rgba(0,0,0,.25)}
+.drawer.open{transform:none}
+.drawer-head{display:flex;justify-content:space-between;align-items:center;padding:20px;border-bottom:1px solid var(--line)}
+.drawer-body{flex:1;overflow:auto;padding:16px 20px}
+.drawer-foot{padding:20px;border-top:1px solid var(--line)}
+.row{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.row .mini{width:56px;height:56px;border-radius:14px;display:grid;place-items:center;font-size:1.8rem;flex-shrink:0}
+.row .grow{flex:1;min-width:0}
+.row .grow b{display:block;font-size:.92rem}
+.qty{display:flex;align-items:center;gap:8px;margin-top:6px}
+.qty button{width:26px;height:26px;border-radius:8px;border:1px solid var(--line)}
+.qty button:hover{border-color:var(--primary);color:var(--primary)}
+.total{display:flex;justify-content:space-between;font-size:1.15rem;font-weight:800;margin-bottom:14px}
+.close{width:36px;height:36px;border-radius:50%;font-size:1.2rem}
+.close:hover{background:var(--bg)}
+
+.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-48%) scale(.96);opacity:0;pointer-events:none;z-index:110;width:min(440px,calc(100% - 28px));max-height:92vh;overflow:auto;background:var(--card);border-radius:24px;padding:30px;box-shadow:0 30px 80px rgba(0,0,0,.4);transition:.25s}
+.modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}
+.modal.wide{width:min(720px,calc(100% - 28px))}
+.modal .x{position:absolute;right:14px;top:14px}
+.tabs{display:flex;background:var(--bg);border-radius:999px;padding:4px;margin-bottom:22px}
+.tabs button{flex:1;padding:10px;border-radius:999px;font-weight:600;color:var(--muted)}
+.tabs button.active{background:var(--card);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.85rem;font-weight:600;margin-bottom:6px}
+.field input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);outline:none}
+.field input:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(108,77,255,.15)}
+.err{color:#e11d48;font-size:.85rem;min-height:20px;margin-bottom:8px}
+.full{width:100%}
+.detail{display:grid;grid-template-columns:1fr 1.2fr;gap:24px}
+.detail .big{border-radius:20px;display:grid;place-items:center;font-size:7rem;min-height:240px}
+@media(max-width:620px){.detail{grid-template-columns:1fr}}
+.order{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px;font-size:.9rem}
+
+/* TOAST */
+#toasts{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center}
+.toast{background:var(--text);color:var(--bg);padding:12px 20px;border-radius:999px;font-weight:600;box-shadow:var(--shadow);animation:pop .25s}
+footer{text-align:center;padding:30px;color:var(--muted);border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <div class="logo">Lokaria</div>
+    <div class="search"><span>🔍</span><input id="q" placeholder="Cari produk favoritmu..."></div>
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeBtn" title="Mode gelap">🌙</button>
+      <button class="icon-btn" id="wishBtn" title="Wishlist">♥<span class="badge grad" id="wishCount">0</span></button>
+      <button class="icon-btn" id="cartBtn" title="Keranjang">🛒<span class="badge grad" id="cartCount">0</span></button>
+      <div id="authArea"></div>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <div class="blob b1"></div><div class="blob b2"></div>
+    <div class="hero-emoji">🛍️</div>
+    <h1>Belanja seru, harga pas, kirim cepat.</h1>
+    <p>Temukan ribuan produk pilihan dari gadget sampai fashion. Daftar sekarang dan nikmati diskon member hingga 40%.</p>
+    <a href="#produk"><button class="btn">Mulai Belanja →</button></a>
+  </section>
+
+  <section class="perks">
+    <div class="perk"><span class="e">🚚</span><div><b>Gratis Ongkir</b><small>Min. belanja Rp300.000</small></div></div>
+    <div class="perk"><span class="e">🔒</span><div><b>Pembayaran Aman</b><small>Transaksi terlindungi</small></div></div>
+    <div class="perk"><span class="e">↩️</span><div><b>Retur 7 Hari</b><small>Tanpa ribet</small></div></div>
+    <div class="perk"><span class="e">🎁</span><div><b>Poin Member</b><small>Tukar jadi diskon</small></div></div>
+  </section>
+
+  <section class="flash">
+    <div><b>⚡ Flash Sale berakhir dalam</b><div class="meta">Diskon spesial untuk produk bertanda 🔥</div></div>
+    <div class="timer"><span id="th">00</span><span id="tm">00</span><span id="ts">00</span></div>
+  </section>
+
+  <section id="produk">
+    <h2 class="title">Semua Produk</h2>
+    <div class="toolbar">
+      <div class="chips" id="chips"></div>
+      <select id="sort">
+        <option value="pop">Terpopuler</option>
+        <option value="low">Harga terendah</option>
+        <option value="high">Harga tertinggi</option>
+        <option value="rate">Rating tertinggi</option>
+      </select>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+</main>
+
+<footer>© 2026 Lokaria. Dibuat dengan ♥ — demo toko online.</footer>
+
+<div class="overlay" id="overlay"></div>
+
+<aside class="drawer" id="drawer">
+  <div class="drawer-head"><h3>Keranjang Belanja</h3><button class="close" data-close>✕</button></div>
+  <div class="drawer-body" id="cartBody"></div>
+  <div class="drawer-foot">
+    <div class="total"><span>Total</span><span id="cartTotal">Rp0</span></div>
+    <button class="btn btn-primary full" id="checkoutBtn">Checkout</button>
+  </div>
+</aside>
+
+<div class="modal" id="authModal">
+  <button class="close x" data-close>✕</button>
+  <div class="tabs"><button class="active" data-tab="login">Masuk</button><button data-tab="register">Daftar</button></div>
+  <form id="authForm" autocomplete="on">
+    <div class="field" id="nameField" style="display:none"><label>Nama lengkap</label><input id="aName" autocomplete="name"></div>
+    <div class="field"><label>Email</label><input id="aEmail" type="email" required autocomplete="email"></div>
+    <div class="field"><label>Password</label><input id="aPass" type="password" required minlength="6" autocomplete="current-password"></div>
+    <div class="err" id="authErr"></div>
+    <button class="btn btn-primary full" id="authSubmit">Masuk</button>
+  </form>
+</div>
+
+<div class="modal wide" id="prodModal"><button class="close x" data-close>✕</button><div id="prodBody"></div></div>
+<div class="modal" id="ordersModal"><button class="close x" data-close>✕</button><h3 style="margin-bottom:16px">Riwayat Pesanan</h3><div id="ordersBody"></div></div>
+<div id="toasts"></div>
+
+<script>
+/* ===== DATA ===== */
+const PRODUCTS=[
+ {id:1,name:"Headphone Nirkabel Pro",cat:"Elektronik",price:549000,old:799000,rating:4.8,sold:1280,emoji:"🎧",c:["#7c5cff","#b79dff"],hot:1,desc:"Noise cancelling aktif, baterai 40 jam, suara jernih dan nyaman dipakai seharian."},
+ {id:2,name:"Smartwatch Fit X",cat:"Elektronik",price:899000,old:1199000,rating:4.7,sold:940,emoji:"⌚",c:["#00c2a8","#7ef0dc"],hot:1,desc:"Pantau detak jantung, tidur, dan 60+ mode olahraga. Tahan air 5 ATM."},
+ {id:3,name:"Kamera Mirrorless Mini",cat:"Elektronik",price:6499000,old:0,rating:4.9,sold:210,emoji:"📷",c:["#334155","#94a3b8"],desc:"24MP, video 4K, ringan dan ringkas untuk konten kreator."},
+ {id:4,name:"Sneakers Urban Run",cat:"Fashion",price:429000,old:599000,rating:4.6,sold:2210,emoji:"👟",c:["#ff7849","#ffc09f"],hot:1,desc:"Sol empuk anti-selip, bahan breathable. Cocok untuk harian maupun olahraga."},
+ {id:5,name:"Jaket Bomber Klasik",cat:"Fashion",price:359000,old:0,rating:4.5,sold:870,emoji:"🧥",c:["#16a34a","#86efac"],desc:"Bahan tebal nyaman, potongan modern, tersedia banyak ukuran."},
+ {id:6,name:"Tas Ransel Anti Air",cat:"Fashion",price:279000,old:350000,rating:4.7,sold:1530,emoji:"🎒",c:["#f59e0b","#fde68a"],desc:"Kapasitas 25L, slot laptop 15 inci, port USB untuk charging."},
+ {id:7,name:"Kacamata Sunwave",cat:"Fashion",price:149000,old:0,rating:4.4,sold:640,emoji:"🕶️",c:["#0ea5e9","#bae6fd"],desc:"Lensa polarized UV400, frame ringan dan kuat."},
+ {id:8,name:"Set Skincare Glow",cat:"Kecantikan",price:319000,old:450000,rating:4.8,sold:3120,emoji:"🧴",c:["#ec4899","#fbcfe8"],hot:1,desc:"Cleanser, toner, serum, dan moisturizer untuk kulit sehat bercahaya."},
+ {id:9,name:"Parfum Senja 50ml",cat:"Kecantikan",price:239000,old:0,rating:4.6,sold:980,emoji:"🌸",c:["#a855f7","#e9d5ff"],desc:"Aroma floral-woody yang tahan hingga 8 jam."},
+ {id:10,name:"Lampu Meja LED Kreatif",cat:"Rumah",price:189000,old:249000,rating:4.5,sold:760,emoji:"💡",c:["#eab308","#fef08a"],desc:"3 mode cahaya, dimmer sentuh, hemat energi dan mata nyaman."},
+ {id:11,name:"Blender Portable",cat:"Rumah",price:199000,old:0,rating:4.3,sold:1120,emoji:"🥤",c:["#f43f5e","#fecdd3"],desc:"Cas via USB, bawa ke mana saja untuk smoothie segar."},
+ {id:12,name:"Tanaman Hias Monstera",cat:"Rumah",price:89000,old:0,rating:4.9,sold:1890,emoji:"🪴",c:["#22c55e","#bbf7d0"],desc:"Mempercantik ruangan, mudah dirawat, lengkap dengan pot keramik."}
+];
+const CATS=["Semua",...new Set(PRODUCTS.map(p=>p.cat))];
+
+/* ===== HELPERS ===== */
+const $=s=>document.querySelector(s);
+const rp=n=>"Rp"+n.toLocaleString("id-ID");
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
+const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const grad=p=>`linear-gradient(135deg,${p.c[0]},${p.c[1]})`;
+function toast(m){const t=document.createElement("div");t.className="toast";t.textContent=m;$("#toasts").appendChild(t);setTimeout(()=>t.remove(),2400)}
+async function hash(s){
+  if(window.crypto&&crypto.subtle){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("lokaria|"+s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+  let h=5381;for(const c of "lokaria|"+s)h=((h<<5)+h+c.charCodeAt(0))|0;return String(h);
+}
+
+/* ===== STATE ===== */
+let cart=load("lk_cart",{});          // {id: qty}
+let wish=load("lk_wish",[]);
+let session=load("lk_session",null);  // {name,email}
+let cat="Semua",query="",sortBy="pop";
+
+/* ===== OVERLAYS ===== */
+function openEl(el){$("#overlay").classList.add("open");el.classList.add("open")}
+function closeAll(){document.querySelectorAll(".open").forEach(e=>e.classList.remove("open"))}
+$("#overlay").onclick=closeAll;
+document.addEventListener("click",e=>{if(e.target.closest("[data-close]"))closeAll();if(!e.target.closest(".user-wrap"))document.querySelector(".dropdown")?.classList.remove("open")});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeAll()});
+
+/* ===== PRODUCTS ===== */
+function renderChips(){
+  $("#chips").innerHTML=CATS.map(c=>`<button class="chip ${c===cat?"active":""}" data-cat="${esc(c)}">${esc(c)}</button>`).join("");
+}
+function renderGrid(){
+  let list=PRODUCTS.filter(p=>(cat==="Semua"||p.cat===cat)&&p.name.toLowerCase().includes(query.toLowerCase()));
+  const s={pop:(a,b)=>b.sold-a.sold,low:(a,b)=>a.price-b.price,high:(a,b)=>b.price-a.price,rate:(a,b)=>b.rating-a.rating}[sortBy];
+  list.sort(s);
+  $("#grid").innerHTML=list.length?list.map((p,i)=>{
+    const disc=p.old?Math.round((1-p.price/p.old)*100):0;
+    return `<article class="card" style="animation-delay:${i*50}ms">
+      <div class="thumb" style="background:${grad(p)}" data-view="${p.id}">
+        <i>${p.emoji}</i>
+        ${disc?`<span class="tag">${p.hot?"🔥 ":""}-${disc}%</span>`:""}
+        <button class="wish" data-wish="${p.id}" aria-label="Wishlist">${wish.includes(p.id)?"❤️":"🤍"}</button>
+      </div>
+      <div class="info">
+        <h3>${esc(p.name)}</h3>
+        <div class="meta">⭐ ${p.rating} · ${p.sold.toLocaleString("id-ID")} terjual</div>
+        <div class="price">${rp(p.price)}${p.old?`<span class="old">${rp(p.old)}</span>`:""}</div>
+        <button class="add grad" data-add="${p.id}">+ Keranjang</button>
+      </div></article>`}).join(""):`<div class="empty">😕 Produk tidak ditemukan.</div>`;
+}
+$("#chips").onclick=e=>{const b=e.target.closest("[data-cat]");if(!b)return;cat=b.dataset.cat;renderChips();renderGrid()};
+$("#q").oninput=e=>{query=e.target.value;renderGrid()};
+$("#sort").onchange=e=>{sortBy=e.target.value;renderGrid()};
+$("#grid").onclick=e=>{
+  const a=e.target.closest("[data-add]"),w=e.target.closest("[data-wish]"),v=e.target.closest("[data-view]");
+  if(a)addCart(+a.dataset.add);
+  else if(w)toggleWish(+w.dataset.wish);
+  else if(v)viewProduct(+v.dataset.view);
+};
+function viewProduct(id){
+  const p=PRODUCTS.find(x=>x.id===id);
+  $("#prodBody").innerHTML=`<div class="detail">
+    <div class="big" style="background:${grad(p)}">${p.emoji}</div>
+    <div><div class="meta">${esc(p.cat)}</div><h2 style="margin:6px 0">${esc(p.name)}</h2>
+    <div class="meta">⭐ ${p.rating} · ${p.sold.toLocaleString("id-ID")} terjual</div>
+    <div class="price" style="font-size:1.6rem;margin:14px 0">${rp(p.price)}${p.old?`<span class="old">${rp(p.old)}</span>`:""}</div>
+    <p style="color:var(--muted);line-height:1.6;margin-bottom:20px">${esc(p.desc)}</p>
+    <button class="btn btn-primary full" data-add-close="${p.id}">+ Tambah ke Keranjang</button></div></div>`;
+  openEl($("#prodModal"));
+}
+$("#prodBody").onclick=e=>{const b=e.target.closest("[data-add-close]");if(b){addCart(+b.dataset.addClose);closeAll()}};
+
+/* ===== WISHLIST ===== */
+function toggleWish(id){
+  wish=wish.includes(id)?wish.filter(x=>x!==id):[...wish,id];
+  save("lk_wish",wish);renderGrid();updateBadges();
+  toast(wish.includes(id)?"❤️ Ditambahkan ke wishlist":"Dihapus dari wishlist");
+}
+$("#wishBtn").onclick=()=>{
+  if(!wish.length)return toast("Wishlist masih kosong");
+  cat="Semua";query="";$("#q").value="";
+  renderChips();
+  $("#grid").innerHTML=PRODUCTS.filter(p=>wish.includes(p.id)).map(p=>`
+    <article class="card"><div class="thumb" style="background:${grad(p)}" data-view="${p.id}"><i>${p.emoji}</i>
+    <button class="wish" data-wish="${p.id}">❤️</button></div>
+    <div class="info"><h3>${esc(p.name)}</h3><div class="price">${rp(p.price)}</div>
+    <button class="add grad" data-add="${p.id}">+ Keranjang</button></div></article>`).join("");
+  document.querySelector("#produk h2").textContent="Wishlist Kamu";
+  document.querySelector("#produk").scrollIntoView();
+  const reset=()=>{document.querySelector("#produk h2").textContent="Semua Produk"};
+  $("#chips").addEventListener("click",reset,{once:true});$("#q").addEventListener("input",reset,{once:true});
+};
+
+/* ===== CART ===== */
+function addCart(id){cart[id]=(cart[id]||0)+1;save("lk_cart",cart);updateBadges();renderCart();toast("🛒 Masuk keranjang")}
+function setQty(id,d){cart[id]=(cart[id]||0)+d;if(cart[id]<=0)delete cart[id];save("lk_cart",cart);updateBadges();renderCart()}
+function cartTotal(){return Object.entries(cart).reduce((s,[id,q])=>s+PRODUCTS.find(p=>p.id==id).price*q,0)}
+function renderCart(){
+  const items=Object.entries(cart);
+  $("#cartBody").innerHTML=items.length?items.map(([id,q])=>{const p=PRODUCTS.find(x=>x.id==id);return `
+    <div class="row"><div class="mini" style="background:${grad(p)}">${p.emoji}</div>
+    <div class="grow"><b>${esc(p.name)}</b><span class="meta">${rp(p.price)}</span>
+    <div class="qty"><button data-q="${id}|-1">−</button><span>${q}</span><button data-q="${id}|1">+</button></div></div>
+    <button class="close" data-q="${id}|-999" title="Hapus">🗑</button></div>`}).join(""):`<div class="empty" style="padding:60px 0;text-align:center;color:var(--muted)">🛒<br>Keranjang masih kosong</div>`;
+  $("#cartTotal").textContent=rp(cartTotal());
+}
+$("#cartBody").onclick=e=>{const b=e.target.closest("[data-q]");if(!b)return;const[id,d]=b.dataset.q.split("|");setQty(+id,+d)};
+$("#cartBtn").onclick=()=>{renderCart();openEl($("#drawer"))};
+function updateBadges(){
+  $("#cartCount").textContent=Object.values(cart).reduce((a,b)=>a+b,0);
+  $("#wishCount").textContent=wish.length;
+}
+
+/* ===== CHECKOUT ===== */
+$("#checkoutBtn").onclick=()=>{
+  if(!Object.keys(cart).length)return toast("Keranjang masih kosong");
+  if(!session){closeAll();toast("Silakan masuk dulu untuk checkout");return openAuth("login")}
+  const total=cartTotal(), ship=total>=300000?0:20000;
+  const orders=load("lk_orders",{});
+  const list=orders[session.email]||[];
+  list.unshift({id:"LK"+Date.now().toString().slice(-7),date:new Date().toLocaleString("id-ID"),
+    items:Object.entries(cart).map(([id,q])=>({n:PRODUCTS.find(p=>p.id==id).name,q})),total:total+ship});
+  orders[session.email]=list;save("lk_orders",orders);
+  cart={};save("lk_cart",cart);updateBadges();renderCart();closeAll();
+  toast("🎉 Pesanan berhasil! Terima kasih, "+session.name.split(" ")[0]);
+  confetti();
+};
+function showOrders(){
+  const list=(load("lk_orders",{}))[session.email]||[];
+  $("#ordersBody").innerHTML=list.length?list.map(o=>`<div class="order"><b>#${esc(o.id)}</b> · ${esc(o.date)}<br>
+    ${o.items.map(i=>esc(i.n)+" ×"+i.q).join(", ")}<br><b>${rp(o.total)}</b></div>`).join(""):`<p class="meta">Belum ada pesanan.</p>`;
+  openEl($("#ordersModal"));
+}
+
+/* ===== AUTH ===== */
+let mode="login";
+function openAuth(m){setMode(m);$("#authErr").textContent="";openEl($("#authModal"))}
+function setMode(m){
+  mode=m;
+  document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("active",b.dataset.tab===m));
+  $("#nameField").style.display=m==="register"?"block":"none";
+  $("#authSubmit").textContent=m==="register"?"Buat Akun":"Masuk";
+  $("#aPass").autocomplete=m==="register"?"new-password":"current-password";
+}
+document.querySelector(".tabs").onclick=e=>{const b=e.target.closest("[data-tab]");if(b)setMode(b.dataset.tab)};
+$("#authForm").onsubmit=async e=>{
+  e.preventDefault();
+  const email=$("#aEmail").value.trim().toLowerCase(),pass=$("#aPass").value,name=$("#aName").value.trim();
+  const users=load("lk_users",{}),err=$("#authErr");
+  if(mode==="register"){
+    if(name.length<2)return err.textContent="Nama minimal 2 karakter.";
+    if(users[email])return err.textContent="Email sudah terdaftar. Silakan masuk.";
+    users[email]={name,pass:await hash(pass)};save("lk_users",users);
+    session={name,email};
+    toast("🎉 Selamat datang, "+name.split(" ")[0]+"!");
+  }else{
+    const u=users[email];
+    if(!u||u.pass!==await hash(pass))return err.textContent="Email atau password salah.";
+    session={name:u.name,email};
+    toast("👋 Halo lagi, "+u.name.split(" ")[0]+"!");
+  }
+  save("lk_session",session);$("#authForm").reset();closeAll();renderAuth();
+};
+function renderAuth(){
+  const a=$("#authArea");
+  if(!session){
+    a.innerHTML=`<button class="btn btn-ghost" id="loginBtn">Masuk</button> <button class="btn btn-primary" id="regBtn">Daftar</button>`;
+    $("#loginBtn").onclick=()=>openAuth("login");$("#regBtn").onclick=()=>openAuth("register");
+  }else{
+    a.innerHTML=`<div class="user-wrap"><button class="user-chip" id="userBtn"><span class="avatar grad">${esc(session.name[0].toUpperCase())}</span><span>${esc(session.name.split(" ")[0])}</span></button>
+      <div class="dropdown" id="dd"><div class="meta" style="padding:8px 12px">${esc(session.email)}</div>
+      <button id="ordBtn">📦 Pesanan saya</button><button id="outBtn">🚪 Keluar</button></div></div>`;
+    $("#userBtn").onclick=e=>{e.stopPropagation();$("#dd").classList.toggle("open")};
+    $("#ordBtn").onclick=showOrders;
+    $("#outBtn").onclick=()=>{session=null;localStorage.removeItem("lk_session");renderAuth();toast("Kamu sudah keluar")};
+  }
+}
+
+/* ===== THEME ===== */
+function applyTheme(d){document.body.classList.toggle("dark",d);$("#themeBtn").textContent=d?"☀️":"🌙"}
+$("#themeBtn").onclick=()=>{const d=!document.body.classList.contains("dark");applyTheme(d);save("lk_dark",d)};
+applyTheme(load("lk_dark",matchMedia("(prefers-color-scheme: dark)").matches));
+
+/* ===== FLASH SALE TIMER (reset tiap tengah malam) ===== */
+function tick(){
+  const n=new Date(),end=new Date(n);end.setHours(24,0,0,0);
+  const s=Math.floor((end-n)/1000),p=x=>String(x).padStart(2,"0");
+  $("#th").textContent=p(Math.floor(s/3600));$("#tm").textContent=p(Math.floor(s%3600/60));$("#ts").textContent=p(s%60);
+}
+setInterval(tick,1000);tick();
+
+/* ===== CONFETTI ===== */
+function confetti(){
+  const cv=document.createElement("canvas");cv.style.cssText="position:fixed;inset:0;z-index:300;pointer-events:none";
+  cv.width=innerWidth;cv.height=innerHeight;document.body.appendChild(cv);const x=cv.getContext("2d");
+  const cols=["#6c4dff","#ff4d8d","#ffc107","#22c55e","#0ea5e9"];
+  const ps=Array.from({length:140},()=>({x:innerWidth/2,y:innerHeight/2,vx:(Math.random()-.5)*16,vy:Math.random()*-14-3,s:Math.random()*8+4,c:cols[Math.random()*5|0],r:Math.random()*6}));
+  let f=0;(function a(){x.clearRect(0,0,cv.width,cv.height);ps.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.r+=.2;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/2,p.s,p.s/2);x.restore()});
+    if(++f<110)requestAnimationFrame(a);else cv.remove()})();
+}
+
+/* ===== INIT ===== */
+renderChips();renderGrid();renderAuth();updateBadges();
+</script>
+</body>
+</html>
